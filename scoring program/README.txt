@@ -49,3 +49,7 @@ that begin with the prefix "2000" using this command:
 
 The same trick can be used to create a single response file from a set
 of individual response files. 
+
+
+
+Env set up: alias qa='python qa.py $1'
