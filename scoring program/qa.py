@@ -1,6 +1,6 @@
 import sys
 from nltk.stem.porter import PorterStemmer
-
+from processQuestions import findQuestionType
 '''
     Process the input file
     inputFile: inputfile from 'qa <inputfile>' command passed from command line
@@ -19,19 +19,22 @@ def processStory(story):
     headline = story[0].strip()
     date = story[1].strip()
     story_id = story[2].strip()
-
     for story_line in range(3, len(story)):
         story_line = story[story_line].strip()
         story_line_words = story_line.split()
         for word in story_line_words:
-            print("Word is: " + word)
             porter_stemmer = PorterStemmer()
             stem = porter_stemmer.stem(word)
-            print("Stem is: " + stem)
+            # print("Word is: " + word, "Stem is: " + stem)
 
-    pass
+    
 
-def processQuestions(questionsFile, storyFile):
+'''
+    questionsFile: File that has a list of questions need to be answered
+    storyFile: File name that has the story for the questions listed in questionsFile
+    Return: None
+'''
+def findQuestionsAndStory(questionsFile, storyFile):
     try:
         with open(storyFile) as story:
             processStory(story.readlines())
@@ -41,6 +44,18 @@ def processQuestions(questionsFile, storyFile):
         pass
         # print("File "+questionsFile+" doesn't exist!")
 
+
+    with open(questionsFile) as fp:
+        questionFileContents = fp.readlines()
+    for line in questionFileContents:
+        # If not a blank line
+        if line.strip("\n"):
+            lineContent = line.split(":")
+            tag, content = lineContent[0], lineContent[1].strip("\n")
+            if tag == "Question":
+                questionType = findQuestionType(content.lower())
+
+
 '''
     dirPath: a string containing directory path to all the stories
     storyIdLst: a list of storyIds
@@ -48,10 +63,10 @@ def processQuestions(questionsFile, storyFile):
     For each story Id, find the story file and the question File, then process that story to answer all the questions.
 '''
 def findStories(dirPath, storyIdLst):
-    for story in storyIdLst:
-        storyFilePath = dirPath+story+".story"
-        storyQuestionFilePath = dirPath+story+".questions"
-        processQuestions(storyQuestionFilePath, storyFilePath)
+    for storyId in storyIdLst:
+        storyFilePath = dirPath+storyId+".story"
+        storyQuestionFilePath = dirPath+storyId+".questions"
+        findQuestionsAndStory(storyQuestionFilePath, storyFilePath)
         
 
 if __name__ == "__main__":
