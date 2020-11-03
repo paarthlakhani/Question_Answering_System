@@ -1,3 +1,4 @@
+import string
 import sys
 
 import nltk
@@ -45,20 +46,25 @@ def morphological_roots(list_of_words):
     return list_of_words
 
 
-def word_match(morphological_root_of_question, story_sentence):
+def word_match(morphological_root_of_question, morph_story_sentence_words):
     score = 0
-    story_sentence_without_stop_words = removeStopWords(story_sentence)
-    tokenized_story_words = nltk.word_tokenize(story_sentence_without_stop_words)
-    morph_story_words = morphological_roots(tokenized_story_words)
-    for morph_story_word in morph_story_words:
-        if morph_story_word in story_sentence_without_stop_words:
+    for morph_story_word in morph_story_sentence_words:
+        if morph_story_word in morphological_root_of_question:
             score = score + 1
-    return score;
+    return score
 
 
 def processQuestions(questionsFile, story_sentences):
     answer = ""
     question_id = ""
+    morph_story_sentences_dict = {}
+    for story_sentence_index in range(0, len(story_sentences)):
+        story_sentences[story_sentence_index] = story_sentences[story_sentence_index].translate(
+                        str.maketrans('', '', string.punctuation))
+        story_sentence_without_stop_words = removeStopWords(story_sentences[story_sentence_index])
+        tokenized_story_words = nltk.word_tokenize(story_sentence_without_stop_words)
+        morph_story_words = morphological_roots(tokenized_story_words)
+        morph_story_sentences_dict[story_sentence_index] = morph_story_words
     with open(questionsFile) as fp:
         questions = fp.readlines()
         for question_component in questions:
@@ -72,11 +78,14 @@ def processQuestions(questionsFile, story_sentences):
                     question = question_type_data[1]
                     question_type = findQuestionType(question.lower())
                     question_without_stop_words = removeStopWords(question)
+                    print(question_without_stop_words)
+                    question_without_stop_words = question_without_stop_words.translate(
+                        str.maketrans('', '', string.punctuation))
                     question_words = nltk.word_tokenize(question_without_stop_words)
                     morphological_root_of_question = morphological_roots(question_words)
-                    for story_sentence_index in range(0, len(story_sentences)):
-                        word_match_score = word_match(morphological_root_of_question, story_sentences[story_sentence_index])
-                        sentence_score[story_sentence_index] = word_match_score
+                    for sentence_number, morph_sentence_words in morph_story_sentences_dict.items():
+                        word_match_score = word_match(morphological_root_of_question, morph_sentence_words)
+                        sentence_score[sentence_number] = word_match_score
                     print(sentence_score)
             else:
                 question_id = "QuestionID:" + str(question_id) + "\n"
@@ -97,10 +106,11 @@ def processQuestions(questionsFile, story_sentences):
 def find_questions_and_story(questionsFile, storyFile):
     with open(storyFile) as story:
         story_sentences = processStory(story.readlines())
-        #print(story_sentences)
+        # print(story_sentences)
     # with open(questionsFile) as fp:
     #    print(fp.readlines())
     processQuestions(questionsFile, story_sentences)
+
 
 '''
     dirPath: a string containing directory path to all the stories
