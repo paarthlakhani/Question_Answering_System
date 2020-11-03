@@ -11,3 +11,4 @@ def removeStopWords(sentence):
     wordsInSentence = nltk.word_tokenize(sentence)
     sentenceWithoutStopWords = " ".join([word for word in wordsInSentence if word not in stopWords])
     return sentenceWithoutStopWords
+    
