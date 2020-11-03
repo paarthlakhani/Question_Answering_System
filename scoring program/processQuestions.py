@@ -3,7 +3,7 @@ allQuestionType = set(["why", "whose", "what", "where", "when", "how", "who"])
 
 '''
     question: question string
-    Return: type of question. Type could be anyhting in ["why", "whose", "what", "where", "when", "how", "who"]
+    Return: type of question. The type could be anyhting in ["why", "whose", "what", "where", "when", "how", "who"]
     This function assumes that each question would have only one WH word and it returns after finding the first occurence of a WH word
 '''
 def findQuestionType(question):

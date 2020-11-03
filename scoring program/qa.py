@@ -1,6 +1,7 @@
 import sys
 from nltk.stem.porter import PorterStemmer
 from processQuestions import findQuestionType
+from stopWordsHandling import removeStopWords
 '''
     Process the input file
     inputFile: inputfile from 'qa <inputfile>' command passed from command line
@@ -27,8 +28,6 @@ def processStory(story):
             stem = porter_stemmer.stem(word)
             # print("Word is: " + word, "Stem is: " + stem)
 
-    
-
 '''
     questionsFile: File that has a list of questions need to be answered
     storyFile: File name that has the story for the questions listed in questionsFile
@@ -44,7 +43,6 @@ def findQuestionsAndStory(questionsFile, storyFile):
         pass
         # print("File "+questionsFile+" doesn't exist!")
 
-
     with open(questionsFile) as fp:
         questionFileContents = fp.readlines()
     for line in questionFileContents:
@@ -53,8 +51,11 @@ def findQuestionsAndStory(questionsFile, storyFile):
             lineContent = line.split(":")
             tag, content = lineContent[0], lineContent[1].strip("\n")
             if tag == "Question":
+                # print(content)
                 questionType = findQuestionType(content.lower())
-
+                questionWithoutStopWords = removeStopWords(content)
+                # print(questionType,"******", questionWithoutStopWords)
+                # print("____________________________________________________________")
 
 '''
     dirPath: a string containing directory path to all the stories
@@ -66,8 +67,7 @@ def findStories(dirPath, storyIdLst):
     for storyId in storyIdLst:
         storyFilePath = dirPath+storyId+".story"
         storyQuestionFilePath = dirPath+storyId+".questions"
-        findQuestionsAndStory(storyQuestionFilePath, storyFilePath)
-        
+        findQuestionsAndStory(storyQuestionFilePath, storyFilePath)        
 
 if __name__ == "__main__":
     inputFile = sys.argv[1]
