@@ -1,4 +1,5 @@
 import sys
+from nltk.stem.porter import PorterStemmer
 
 '''
     Process the input file
@@ -14,13 +15,28 @@ def processInputFile(inputFile):
         storyIds = [storyId.strip("\n").strip(" ") for storyId in lines[1:]]
         return dirPath, storyIds
 
-def processStory():
+def processStory(story):
+    headline = story[0].strip()
+    date = story[1].strip()
+    story_id = story[2].strip()
+
+    for story_line in range(3, len(story)):
+        story_line = story[story_line].strip()
+        story_line_words = story_line.split()
+        for word in story_line_words:
+            print("Word is: " + word)
+            porter_stemmer = PorterStemmer()
+            stem = porter_stemmer.stem(word)
+            print("Stem is: " + stem)
+
     pass
 
 def processQuestions(questionsFile, storyFile):
     try:
-        with open(questionsFile) as fp:
-            print(fp.readlines())   
+        with open(storyFile) as story:
+            processStory(story.readlines())
+        #with open(questionsFile) as fp:
+        #    print(fp.readlines())
     except:
         pass
         # print("File "+questionsFile+" doesn't exist!")
