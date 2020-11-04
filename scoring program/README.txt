@@ -66,4 +66,8 @@ NLTK SSL certification issue is solved by running below code:
 
       nltk.download()
 on running the above command a new window will pop up and let it finish downloading.
+ 
+Install spacy
+pip install spacy
+python -m spacy download en_core_web_md
 

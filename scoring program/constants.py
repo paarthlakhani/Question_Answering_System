@@ -3,7 +3,7 @@ good_clue = 4
 confident = 6
 slam_dunk = 20
 
-all_question_type = {"why", "whose", "what", "where", "when", "how", "who"}
+all_question_type = {"why", "whose", "what", "where", "when", "how", "who", "whom"}
 
 # common prepositions: above, along, at, below, beside, between, during, for, from, in, near, on, outside, over, past, through, towards, under, up, with
 location_preposition = set(["in", "on", "at", "near", "next to", "between", "far from", "opposite", "behind",
