@@ -4,7 +4,7 @@ from nltk.stem.porter import PorterStemmer
 from processQuestions import findQuestionType
 from parser import removeStopWords
 from nltk.tokenize import sent_tokenize
-from story_handling import process_story
+from story_handling import process_story, morph_story_sentences
 from question_handling import process_questions_file
 
 
@@ -42,7 +42,7 @@ def find_questions_and_story(questionsFile, storyFile):
 
     Return: None
     """
-    story_sentences = process_story(storyFile)
+    morph_story_sentences_dict = morph_story_sentences(storyFile)
     question_pair_lst = process_questions_file(questionsFile)
 
 

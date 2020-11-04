@@ -1,8 +1,17 @@
 import nltk, spacy
 from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
 nlp = spacy.load("en_core_web_sm")
 
 stopWords = set(stopwords.words('english'))
+
+
+def morphological_roots(list_of_words):
+    porter_stemmer = PorterStemmer()
+    for word_index in range(0, len(list_of_words)):
+        list_of_words[word_index] = porter_stemmer.stem(list_of_words[word_index])
+    return list_of_words
+
 
 def removeStopWords(sentence):
     """
