@@ -94,6 +94,8 @@ def find_who_rules_scores(question, story_sentence):
         score += good_clue
 
     return score
+
+
 def find_why_rules_score(story_sentence, cur_sentence_index, best_sentence_index, best_sentence_score, cur_sentence_score):
     """
     Summary Line:
