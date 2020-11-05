@@ -18,7 +18,7 @@ def morphological_roots(list_of_words):
     sentence(string): a string whose stop words need to be removed
 
     Returns:
-    string: a string without stop words
+    set: a set of words with their morphological roots
 
     """
     porter_stemmer = PorterStemmer()

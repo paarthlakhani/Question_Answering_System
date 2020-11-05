@@ -1,5 +1,6 @@
+import string
+
 from constants import *
-#from parser import word_tokenizer, entity_recognizer, get_noun_chunks_list, is_proper_noun, is_human
 import parser as p
 
 
@@ -8,16 +9,31 @@ def word_match(question, morph_story_sentence_words):
     Refer page number 2(bottom left para)
     Verb matches are weighed more heavily than non verb matches. Can you change it accordingly?
     """
-    tokenized_question = p.word_tokenizer(question)
-    morphological_root_of_question = p.morphological_roots(tokenized_question)
+    verbs_more_weightage = []
+    question_pos_words = p.pos_tagger(question)
+    for word, pos_tag in question_pos_words.items():
+        if pos_tag == "VERB":
+            verbs_more_weightage.append(word)
+    verbs_more_weightage = p.morphological_roots(verbs_more_weightage)
+
+    question_no_stop_words_punct = p.removeStopWords(question)
+    question_no_stop_words_punct = question_no_stop_words_punct.translate(str.maketrans('', '', string.punctuation))
+    morphological_root_of_question = p.word_tokenizer(question_no_stop_words_punct)
+    morphological_root_of_question = p.morphological_roots(morphological_root_of_question)
+
     score = 0
     for morph_story_word in morph_story_sentence_words:
         if morph_story_word in morphological_root_of_question:
-            score = score + 1
+            if morph_story_word in verbs_more_weightage:
+                score = score + 6
+            else:
+                score = score + 3
+        elif morph_story_word in verbs_more_weightage:
+            score = score + 6
     return score
 
 
-def find_where_rules_score(question, story_sentence):
+def find_where_rules_score(question, story_sentence, morphed_sentence):
     """
     Summary Line:
     Where questions almost always look for a specific location.
@@ -32,7 +48,7 @@ def find_where_rules_score(question, story_sentence):
     """
     score = 0
     # Rule 1: general word matching function
-    score += word_match(question, story_sentence)
+    score += word_match(question, morphed_sentence)
 
     tokenized_words = p.word_tokenizer(story_sentence)
     

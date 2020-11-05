@@ -10,7 +10,7 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
         if question_type == "who":
             score = rules_parser.find_who_rules_scores(question, sentence_list[0], sentence_list[1]) # 0 - original, 1 - morphed
         elif question_type == "where":
-            rules_parser.find_where_rules_score(question, sentence_list[0])#, sentence_list[1])
+            score = rules_parser.find_where_rules_score(question, sentence_list[0], sentence_list[1])
         elif question_type == "why":
             pass
             #rules_parser.find_best_sentence_for_why(question, sentence_list[0], sentence_list[1])
@@ -53,7 +53,7 @@ def question_iterator(question_pair_lst, morph_story_sentences_dict):
         answer = find_story_sentence_scores(morph_story_sentences_dict, question_type, question)
         print("QuestionID: " + question_pair["QuestionID"])
         print("Question: " + question)
-        print("Answer:" + answer)
+        print("Answer: " + answer)
         print("\n")
 
 
