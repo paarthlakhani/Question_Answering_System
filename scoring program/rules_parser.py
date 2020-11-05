@@ -40,10 +40,62 @@ def find_where_rules_score(question, story_sentence):
 
     # Rule 3: looks for sentences with words belonging to LOCATION semantic class
     named_entities = entity_recognizer(story_sentence)
+    
     for entity, label in named_entities.items():
         if label in spacy_location_labels:
             # Need to add one more check here to identify LOCATION
             score += confident
 
     return score
+
+def find_why_rules_score(story_sentence, cur_sentence_index, best_sentence_index, best_sentence_score, cur_sentence_score):
+    """
+    Summary Line:
+    WHY questions are handled differently than other questions.
+    The WHY rules are based on the observation that the answer to WHY question often appears immediately
+    before/after the sentence that most closely matches the question. This is due to the
+    causal nature of WHY questions.
+    The caller of this function should call WORDMATCH on all the sentences and decide the BEST sentence.
+    After finding the BEST sentence, reinitialize the score of the other sentences to 0.
+    (ASSUMING THAT THE BEST SENTENCE SCORE SHOULD BE INTIALIZED TO ZERO AS WELL.)
+    
+    Parameters:
+    story_sentence(string): A string containing a sentence in the story
+    cur_sentence_index: Index of the 'story_sentence' inside te story
+    best_sentence_index: Index of the 'BEST sentence' inside the story
+    best_sentence_score: Score of the sentence that best matched wordmatch()
+    cur_senetnce_score: Score of the current sentence against wordmatch()
+
+    Returns:
+    int: Overall integer score for this sentence
+    """
+
+    score = 0
+
+    # Rule 1: Rewards all the sentences that produced the BEST word match score
+    if cur_sentence_score == best_sentence_score:
+        score += clue
+    
+    # Rule 2: If S immed. preceeds member of BEST
+    if cur_sentence_index == best_sentence_index - 1:
+        score += clue
+
+    # Rule 3: If S immed. follows member of BEST
+    elif cur_sentence_index == best_sentence_index + 1:
+        score += good_clue
+
+    # Rule 4: Reawrds sentences that contain the word 'want'
+    if "want" in story_sentence:
+        score += good_clue
+    
+    # Rule 5: Rewards the sentences that contain the word 'so' or 'because'
+    tokenized_words = word_tokenizer(story_sentence)
+    for word in tokenized_words:
+        if word.lower() == "so" or word.lower() == "because":
+            score += good_clue
+            # SHOULD WE BREAK HERE?
+            
+    return good_clue
+        
+
 
