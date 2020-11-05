@@ -25,3 +25,21 @@ with open('./common_titles.txt', 'r') as common_titles_file:
 #print(common_titles)
 
 human_class = usa_names_1910_2013 + common_titles
+
+countries = []
+with open("./country_names.txt") as fp:
+    country_names = fp.readlines()
+    countries = list(map(lambda name: name.strip(), country_names))
+
+us_states = []
+with open("./states_US.txt") as fp:
+    states = fp.readlines()
+    us_states = list(map(lambda name:name.strip(), states))
+
+canadian_provinces =[]
+with open("./provinces_CANADA.txt") as fp:
+    provinces = fp.readlines()
+    canadian_provinces = list(map(lambda name:name.strip(), provinces))
+
+LOCATION = countries + us_states + canadian_provinces
+# print(LOCATION)

@@ -3,6 +3,8 @@ import rules_parser
 
 def find_story_sentence_scores(morph_story_sentences_dict, question_type, question):
     # call the rule function
+    if question_type == "why":
+        morph_story_sentences_dict, best_sentence_index, best_sentence, best_sentence_score = rules_parser.find_best_sentence_for_why_rules(question, morph_story_sentences_dict)
 
     for sent_number, sentence_list in morph_story_sentences_dict.items():
         score = 0
@@ -12,8 +14,8 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
         elif question_type == "where":
             score = rules_parser.find_where_rules_score(question, sentence_list[0], sentence_list[1])
         elif question_type == "why":
-            pass
-            #rules_parser.find_best_sentence_for_why(question, sentence_list[0], sentence_list[1])
+            cur_score = morph_story_sentences_dict[sent_number][2]
+            score = rules_parser.find_why_rules_score(original_sentence, sent_number,best_sentence_index,best_sentence_score, cur_score)
         elif question_type == "what":
             pass
         elif question_type == "when":

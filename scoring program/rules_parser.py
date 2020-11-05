@@ -1,4 +1,4 @@
-import string
+import string, operator
 
 from constants import *
 import parser as p
@@ -62,9 +62,10 @@ def find_where_rules_score(question, story_sentence, morphed_sentence):
     
     for entity, label in named_entities.items():
         if label in spacy_location_labels:
-            # Need to add one more check here to identify LOCATION
             score += confident
-
+            # Need to add one more check here to identify LOCATION
+            if entity in LOCATION:
+                score += good_clue
     return score
 
 
@@ -115,6 +116,38 @@ def find_who_rules_scores(question, story_sentence, morphed_sentence):
 
     return score
 
+def find_best_sentence_for_why_rules(question, morph_story_sentence_dict):
+    """
+    Summary Line:
+    All the sentences are assigned a score using the word_match function. Then the sentences with the top score are isolated. These are the BEST sentences. 
+    Every sentence is then applied a score 0 and WHY rules are applied. 
+    ########### IMP: CURRENTLY I AM ASSUMING THAT THERE IS ONLY ONE BEST SENTENCE ###########
+
+    Parameters:
+    question(string): Original Question
+    morph_story_sentence_dict(dict): {sentence_number :[original_sentence, [morphed sentence words]]}
+
+    Returns:
+    score(int): the score of the sentence that best matches answer to the why question. 
+
+    """
+    
+    for sentence_number, sentence_list in morph_story_sentence_dict.items():
+        score = 0
+        original_sentence, morphed_sentence_words = sentence_list[0], sentence_list[1]
+        score = word_match(question, morphed_sentence_words)
+        morph_story_sentence_dict[sentence_number] = [original_sentence, morphed_sentence_words, score]
+    ordered_items = sorted(morph_story_sentence_dict.items(), key = lambda x:x[1][2], reverse=True)
+    # print(ordered_items)
+    best_sentence_index = ordered_items[0][0]
+    best_sentence = ordered_items[0][1][0]
+    best_sentence_score = ordered_items[0][1][2]
+    # print("*********** The best sentence ******************** ")
+    # print(best_sentence)
+    return morph_story_sentence_dict, best_sentence_index, best_sentence, best_sentence_score
+
+    
+        
 
 def find_why_rules_score(story_sentence, cur_sentence_index, best_sentence_index, best_sentence_score, cur_sentence_score):
     """
@@ -137,13 +170,13 @@ def find_why_rules_score(story_sentence, cur_sentence_index, best_sentence_index
     Returns:
     int: Overall integer score for this sentence
     """
-
+    
     score = 0
-
+    tokenized_words = p.word_tokenizer(story_sentence)
     # Rule 1: Rewards all the sentences that produced the BEST word match score
     if cur_sentence_score == best_sentence_score:
         score += clue
-    
+
     # Rule 2: If S immed. preceeds member of BEST
     if cur_sentence_index == best_sentence_index - 1:
         score += clue
@@ -157,13 +190,17 @@ def find_why_rules_score(story_sentence, cur_sentence_index, best_sentence_index
         score += good_clue
     
     # Rule 5: Rewards the sentences that contain the word 'so' or 'because'
-    tokenized_words = p.word_tokenizer(story_sentence)
     for word in tokenized_words:
         if word.lower() == "so" or word.lower() == "because":
+            # if cur_sentence_score == best_sentence_score:
+            #     score += confident
             score += good_clue
-            # SHOULD WE BREAK HERE?
+        # Rules I added
+        elif word.lower() in set(["if", "after"]):
+            if cur_sentence_score == best_sentence_score:
+                score += good_clue
             
-    return good_clue
+    return score
         
 
 
