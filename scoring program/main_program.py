@@ -1,6 +1,8 @@
 import string
 import sys, nltk
 from nltk.stem.porter import PorterStemmer
+
+from extract_answers import question_iterator
 from processQuestions import findQuestionType
 from parser import removeStopWords
 from nltk.tokenize import sent_tokenize
@@ -44,7 +46,7 @@ def find_questions_and_story(questionsFile, storyFilePath):
     """
     morph_story_sentences_dict = morph_story_sentences(storyFilePath)
     question_pair_lst = process_questions_file(questionsFile)
-
+    question_iterator(question_pair_lst, morph_story_sentences_dict)
 
 
 def find_stories(dirPath, storyIdLst):

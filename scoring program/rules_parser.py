@@ -2,11 +2,14 @@ from constants import *
 #from parser import word_tokenizer, entity_recognizer, get_noun_chunks_list, is_proper_noun, is_human
 import parser as p
 
-def word_match(morphological_root_of_question, morph_story_sentence_words):
+
+def word_match(question, morph_story_sentence_words):
     """ 
     Refer page number 2(bottom left para)
     Verb matches are weighed more heavily than non verb matches. Can you change it accordingly?
     """
+    tokenized_question = p.word_tokenizer(question)
+    morphological_root_of_question = p.morphological_roots(tokenized_question)
     score = 0
     for morph_story_word in morph_story_sentence_words:
         if morph_story_word in morphological_root_of_question:
@@ -68,7 +71,7 @@ def is_human_in_sentence(sentence_frag):
     return False
 
 
-def find_who_rules_scores(question, story_sentence):
+def find_who_rules_scores(question, story_sentence, morphed_sentence):
     """
     Rules defined for 'who' type of questions
     :param question: A question with stop words (original question)
@@ -77,7 +80,8 @@ def find_who_rules_scores(question, story_sentence):
     """
     score = 0
     # Rule 1: general word matching function
-    score += word_match(question, story_sentence)
+    # morph question here
+    score += word_match(question, morphed_sentence)
 
     # Rule 2
     if not is_name_in_sentence_frag(question):
