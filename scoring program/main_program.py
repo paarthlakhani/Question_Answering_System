@@ -6,7 +6,7 @@ from parser import removeStopWords
 from nltk.tokenize import sent_tokenize
 from story_handling import process_story, morph_story_sentences
 from question_handling import process_questions_file
-
+from rules_parser import find_who_rules_scores
 
 
 def processInputFile(inputFile):
@@ -31,7 +31,7 @@ def processInputFile(inputFile):
 
 
 
-def find_questions_and_story(questionsFile, storyFile):
+def find_questions_and_story(questionsFile, storyFilePath):
     """
     Summary Line:
     We might have to refactor this function. Ideally I prefer doing only one type of work inside a function. Currently not sure what this should do!
@@ -42,7 +42,7 @@ def find_questions_and_story(questionsFile, storyFile):
 
     Return: None
     """
-    morph_story_sentences_dict = morph_story_sentences(storyFile)
+    morph_story_sentences_dict = morph_story_sentences(storyFilePath)
     question_pair_lst = process_questions_file(questionsFile)
 
 

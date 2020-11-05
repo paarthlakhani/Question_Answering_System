@@ -70,4 +70,10 @@ on running the above command a new window will pop up and let it finish download
 Install spacy
 pip install spacy
 python -m spacy download en_core_web_md
+    Above command should be run in the directory where the py file that uses spacy is located
 
+Todo:
+processQuestions.findQuestionType not used anywhere. Shouldn't that be used instead of
+logic in question_handling.add_question_type ?
+
+rules_parser.py >> Have separate functions for Rule 2 and Rule 3 instead of defining them there

@@ -6,7 +6,22 @@ slam_dunk = 20
 all_question_type = {"why", "whose", "what", "where", "when", "how", "who", "whom"}
 
 # common prepositions: above, along, at, below, beside, between, during, for, from, in, near, on, outside, over, past, through, towards, under, up, with
-location_preposition = set(["in", "on", "at", "near", "next to", "between", "far from", "opposite", "behind",
-                        "under", "below", "above", "on top of", "at the top", "at the bottom", "across", "beside", "around","front"])
+location_preposition = {"in", "on", "at", "near", "next to", "between", "far from", "opposite", "behind", "under",
+                        "below", "above", "on top of", "at the top", "at the bottom", "across", "beside", "around",
+                        "front"}
 
-spacy_location_labels = set(["GPE", "LOC"])
+spacy_location_labels = {"GPE", "LOC"}
+
+
+usa_names_1910_2013 = []
+with open('./usa_names_1910_2013', 'r') as names_file:
+    usa_names_1910_2013 = names_file.readlines()
+    usa_names_1910_2013 = list(map(lambda name: name.strip(), usa_names_1910_2013))
+
+common_titles = []
+with open('./common_titles.txt', 'r') as common_titles_file:
+    common_titles = common_titles_file.readlines()
+    common_titles = list(map(lambda name: name.strip(), common_titles))
+#print(common_titles)
+
+human_class = usa_names_1910_2013 + common_titles

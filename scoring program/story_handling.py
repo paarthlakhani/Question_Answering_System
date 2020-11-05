@@ -38,13 +38,29 @@ def process_story(story_lines):
 
 
 def find_story_sentences(story_file):
+    """
+    Summary Line:
+    Returns a list of sentences in the story
+
+    Parameters:
+    story_lines(list): A list containing each line in the story file
+
+    Returns:
+    list: A list containnig story sentences.
+    """
     story_file_content = read_story_file(story_file)
     story_sentences = process_story(story_file_content)
     return story_sentences
 
 
-def morph_story_sentences(story_file):
-    story_sentences = find_story_sentences(story_file)
+def morph_story_sentences(story_file_path):
+    """
+
+    :param story_file_path: File path to the story
+    :return: dict containing the sentence number as the key and the list as value.
+            list is the original sentence of story and the morphological equivalent words of the sentence
+    """
+    story_sentences = find_story_sentences(story_file_path)
     morph_story_sentence = {}
     for index, sentence in enumerate(story_sentences):
         sentence_words = word_tokenizer(sentence)

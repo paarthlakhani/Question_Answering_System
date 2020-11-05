@@ -1,11 +1,11 @@
 from constants import *
-from parser import word_tokenizer, entity_recognizer
-
+#from parser import word_tokenizer, entity_recognizer, get_noun_chunks_list, is_proper_noun, is_human
+import parser as p
 
 def word_match(morphological_root_of_question, morph_story_sentence_words):
     """ 
     Refer page number 2(bottom left para)
-    Verb matches are weighed more heavily than non verb matches. Can you chage it accordingly?
+    Verb matches are weighed more heavily than non verb matches. Can you change it accordingly?
     """
     score = 0
     for morph_story_word in morph_story_sentence_words:
@@ -31,7 +31,7 @@ def find_where_rules_score(question, story_sentence):
     # Rule 1: general word matching function
     score += word_match(question, story_sentence)
 
-    tokenized_words = word_tokenizer(story_sentence)
+    tokenized_words = p.word_tokenizer(story_sentence)
     
     # Rule 2: identifies location preposition
     for word in tokenized_words:
@@ -39,7 +39,7 @@ def find_where_rules_score(question, story_sentence):
             score += good_clue
 
     # Rule 3: looks for sentences with words belonging to LOCATION semantic class
-    named_entities = entity_recognizer(story_sentence)
+    named_entities = p.entity_recognizer(story_sentence)
     
     for entity, label in named_entities.items():
         if label in spacy_location_labels:
@@ -48,6 +48,52 @@ def find_where_rules_score(question, story_sentence):
 
     return score
 
+
+def is_name_in_sentence_frag(sentence_frag):
+    sentence_noun_phrase_chunk = p.get_noun_chunks_list(sentence_frag)
+
+    sentence_contain_name = False
+    for noun_phrase in sentence_noun_phrase_chunk:
+        if p.is_name(noun_phrase):
+            sentence_contain_name = True
+            return sentence_contain_name
+    return sentence_contain_name
+
+
+def is_human_in_sentence(sentence_frag):
+    tokenized_words = p.word_tokenizer(sentence_frag)
+    for word in tokenized_words:
+        if p.is_human(word):
+            return True
+    return False
+
+
+def find_who_rules_scores(question, story_sentence):
+    """
+    Rules defined for 'who' type of questions
+    :param question: A question with stop words (original question)
+    :param story_sentence: A single sentence of a story
+    :return: Score of this sentence after applying
+    """
+    score = 0
+    # Rule 1: general word matching function
+    score += word_match(question, story_sentence)
+
+    # Rule 2
+    if not is_name_in_sentence_frag(question):
+        if is_name_in_sentence_frag(story_sentence):
+            score += confident
+
+    # Rule #3
+    if not is_name_in_sentence_frag(question):
+        if "name" in story_sentence:
+            score += good_clue
+
+    # Rule #4
+    if is_name_in_sentence_frag(story_sentence) or is_human_in_sentence(story_sentence):
+        score += good_clue
+
+    return score
 def find_why_rules_score(story_sentence, cur_sentence_index, best_sentence_index, best_sentence_score, cur_sentence_score):
     """
     Summary Line:
@@ -89,7 +135,7 @@ def find_why_rules_score(story_sentence, cur_sentence_index, best_sentence_index
         score += good_clue
     
     # Rule 5: Rewards the sentences that contain the word 'so' or 'because'
-    tokenized_words = word_tokenizer(story_sentence)
+    tokenized_words = p.word_tokenizer(story_sentence)
     for word in tokenized_words:
         if word.lower() == "so" or word.lower() == "because":
             score += good_clue
