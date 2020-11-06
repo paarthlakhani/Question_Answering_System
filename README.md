@@ -1,8 +1,15 @@
 External libraries:
-spacy.io: https://spacy.io/ 
+
+spacy.io: https://spacy.io/
+
 NLTK: https://www.nltk.org/ 
+
 Our program takes around 4 seconds to run input_file with one story
-Ohe program takes around 3 minutes to run input_file with 74 stories
+
+Our program takes around 3 minutes to run input_file with 74 stories
+
+Contributions of team members:
+
 Sushmita:
 
 Paarth:
