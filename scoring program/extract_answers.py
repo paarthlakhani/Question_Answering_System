@@ -48,10 +48,7 @@ def extract_where_answer(sentence, question):
         # print("The sentence is:", sentence, "\nThe question is:",question)
         for entity, label in named_entities.items():
             if label == "GPE" or label == "LOC" or label in constants.LOCATION:
-                if answer_sentence:
-                    answer_sentence += " " + entity
-                else:
-                    answer_sentence = entity
+                return entity
         return answer_sentence if answer_sentence else sentence
     #where did find something
     return sentence
@@ -65,25 +62,14 @@ def extract_why_answer(sentence, question):
         i = -1
         for i, word in enumerate(words):
             if "because" in word:
-                i += 1
-                answer_sentence += word
-                break
-        while i < len(words) and words[i].isalpha():
-            answer_sentence += " " + words[i]
-            i += 1
-        return answer_sentence
+                return " ".join(words[i:])
+        
     if "so" in sentence.lower():
         words = sentence.lower().split()
         i = -1
         for i, word in enumerate(words):
             if "so" in word:
-                i += 1
-                answer_sentence += word
-                break
-        while i < len(words) and words[i].isalpha():
-            answer_sentence += " " +words[i]
-            i += 1
-        return answer_sentence
+                return " ".join(words[i:])
 
     return sentence
 
@@ -106,12 +92,19 @@ def extract_who_answer(sentence, question):
 def extract_how_answer(sentence, question):
     tokenized_words = p.word_tokenizer(sentence)
     named_entities = p.entity_recognizer(sentence)
-    for entity, label in named_entities.items():
-        if label in {"QUANTITY", "MONEY", "PERCENT", "DATE"}:
-            return entity
-    for i, word in enumerate(tokenized_words):
-        if word.isdigit() or "$" in word or "%" in word:
-            return "t".join(tokenized_words[i:i+2])
+    # If question contains big, small etc, reward the sentences, that contain quantity
+    quantity = ["big", "small", "tall"]
+    # if question contains any of the above quantities, and answer contains quantifiers, reward them
+    if any(quant in question.lower() for quant in quantity):
+        for entity, label in named_entities.items():
+            if label in "QUANTITY":
+                return entity
+    money = ["cost", "much", "expensive"]
+    if any(m in question.lower() for m in money):
+        for entity, label in named_entities.items():
+            if label in "MONEY":
+                return entity
+    
     return sentence
 
 
@@ -134,10 +127,10 @@ def find_answer(sentence, question_type, question):
         return extract_who_answer(sentence, question)
     elif question_type == "when":
         return extract_when_answer(sentence, question)
-    # if question_type == "how":
-    #     return extract_how_answer(sentence, question)
-    # if question_type == "why":
-    #     return extract_why_answer(sentence, question)
+    if question_type == "how":
+        return extract_how_answer(sentence, question)
+    if question_type == "why":
+        return extract_why_answer(sentence, question)
     return sentence
 
 

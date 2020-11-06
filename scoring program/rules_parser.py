@@ -286,6 +286,27 @@ def find_what_rules_score(question, story_sentence, morphed_sentence):
     return score
 
 
+# def find_how_rules_score(question, sentence, morphed_sentence):
+#     score = 0
+
+#     # Rule 1: Generic wordMatch function
+#     score += word_match(question, morphed_sentence)
+    
+#     named_entities = p.entity_recognizer(sentence)
+#     tokenized_words = p.word_tokenizer(sentence)
+#     #Rule 2: Rewards the sentences that contain numbers if question conatains 'quantifiers'
+#     for entity, label in named_entities.items():
+#         if label in {"QUANTITY", "MONEY", "PERCENT", "DATE"}:
+#             score += good_clue
+
+#     question_tokens = p.word_tokenizer(question)
+#     for word in question_tokens:
+#         if word in quantifiers:
+#             for sent_word in tokenized_words or sent_word in quantifiers:
+#                 if sent_word.isdigit():
+#                     score += confident
+#     return score
+
 def find_how_rules_score(question, sentence, morphed_sentence):
     score = 0
 
@@ -294,15 +315,37 @@ def find_how_rules_score(question, sentence, morphed_sentence):
     
     named_entities = p.entity_recognizer(sentence)
     tokenized_words = p.word_tokenizer(sentence)
+    
+    # If question contains big, small etc, reward the sentences, that contain quantity
+    quantity = ["big", "small", "tall"]
+    money = ["cost", "much", "expensive"]
+    adjectives = ["old", "age", "long", "often", "year", "month"]
+    # if question contains any of the above quantities, and answer contains quantifiers, reward them
+    if any(quant in question.lower() for quant in quantity):
+        for entity, label in named_entities.items():
+            if label in "QUANTITY":
+                score += confident
+
+    
+    elif any(m in question.lower() for m in money):
+        for entity, label in named_entities.items():
+            if label in "MONEY":
+                score += confident
+
+    
+    elif any(adj in question.lower() for adj in adjectives):
+        if any(adj in sentence.lower() for adj in sentence):
+            score += confident
     #Rule 2: Rewards the sentences that contain numbers if question conatains 'quantifiers'
-    for entity, label in named_entities.items():
-        if label in {"QUANTITY", "MONEY", "PERCENT", "DATE"}:
-            score += good_clue
+    # for entity, label in named_entities.items():
+    #     if label in set(["QUANTITY", "MONEY", "PERCENT", "DATE"]):
+    #         score += good_clue
 
     question_tokens = p.word_tokenizer(question)
     for word in question_tokens:
         if word in quantifiers:
             for sent_word in tokenized_words or sent_word in quantifiers:
                 if sent_word.isdigit():
-                    score += confident
+                    score += good_clue
     return score
+    
