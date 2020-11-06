@@ -33,6 +33,7 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
     answer = find_matching_story_sentence(morph_story_sentences_dict, question_type, question)
     return answer
 
+
 def extract_where_answer(sentence, question):
     # Where is something located?
     answer_sentence = ''
@@ -84,11 +85,26 @@ def extract_why_answer(sentence, question):
     return sentence
 
 
+def extract_who_answer(sentence, question):
+    sentence = sentence.replace('\n', ' ')
+    question_token = p.word_tokenizer(question)
+    sent_entities = p.entity_recognizer(sentence)
+    for sent_entity, label in sent_entities.items():
+        if label == "PERSON":
+            if sent_entity not in question:
+                return str(sent_entity)
+        elif label == "ORG":
+            if sent_entity not in question:
+                return str(sent_entity)
+
+    return sentence
+
+
 def extract_how_answer(sentence, question):
     tokenized_words = p.word_tokenizer(sentence)
     named_entities = p.entity_recognizer(sentence)
     for entity, label in named_entities.items():
-        if label in set(["QUANTITY", "MONEY", "PERCENT", "DATE"]):
+        if label in {"QUANTITY", "MONEY", "PERCENT", "DATE"}:
             return entity
     for i, word in enumerate(tokenized_words):
         if word.isdigit() or "$" in word or "%" in word:
@@ -96,10 +112,11 @@ def extract_how_answer(sentence, question):
     return sentence
 
 
-
 def find_answer(sentence, question_type, question):
     if question_type == "where":
         return extract_where_answer(sentence, question)
+    elif question_type == "who":
+        return extract_who_answer(sentence, question)
     # if question_type == "how":
     #     return extract_how_answer(sentence, question)
     # if question_type == "why":
@@ -129,7 +146,7 @@ def question_iterator(question_pair_lst, morph_story_sentences_dict, output_file
         question = "Question: " + question.strip()
         answer_write = "Answer: " + answer + "\n"
         print(question_id_write)
-        #print(question)
+        # print(question)
         print(answer_write)
         output_file.write(question_id_write)
         output_file.write("\n")
