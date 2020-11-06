@@ -2,6 +2,7 @@ import rules_parser
 import parser as p
 import constants
 
+
 def find_story_sentence_scores(morph_story_sentences_dict, question_type, question):
     # call the rule function
     if question_type == "why":

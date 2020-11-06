@@ -348,4 +348,3 @@ def find_how_rules_score(question, sentence, morphed_sentence):
                 if sent_word.isdigit():
                     score += good_clue
     return score
-    
