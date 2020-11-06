@@ -1,4 +1,4 @@
-import string, operator
+import string
 
 from constants import *
 import parser as p
@@ -96,22 +96,27 @@ def find_who_rules_scores(question, story_sentence, morphed_sentence):
     :return: Score of this sentence after applying
     """
     score = 0
-    # Rule 1: general word matching function
-    # morph question here
+    # Rule 1
     score += word_match(question, morphed_sentence)
 
     # Rule 2
+    '''print(type(question))
+    print(type(morphed_sentence))
+    print(type(' '.join(morphed_sentence)))
+    print(' '.join(morphed_sentence))
+    print(type(story_sentence))'''
+    story_sentence_morphed = ' '.join(morphed_sentence)
     if not is_name_in_sentence_frag(question):
-        if is_name_in_sentence_frag(story_sentence):
+        if is_name_in_sentence_frag(story_sentence_morphed):
             score += confident
 
     # Rule #3
     if not is_name_in_sentence_frag(question):
-        if "name" in story_sentence:
+        if "name" in story_sentence_morphed:
             score += good_clue
 
     # Rule #4
-    if is_name_in_sentence_frag(story_sentence) or is_human_in_sentence(story_sentence):
+    if is_name_in_sentence_frag(story_sentence_morphed) or is_human_in_sentence(story_sentence_morphed):
         score += good_clue
 
     return score

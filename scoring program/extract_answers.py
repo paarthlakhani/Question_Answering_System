@@ -15,7 +15,7 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
             score = rules_parser.find_where_rules_score(question, sentence_list[0], sentence_list[1])
         elif question_type == "why":
             cur_score = morph_story_sentences_dict[sent_number][2]
-            score = rules_parser.find_why_rules_score(original_sentence, sent_number,best_sentence_index,best_sentence_score, cur_score)
+            score = rules_parser.find_why_rules_score(original_sentence, sent_number, best_sentence_index, best_sentence_score, cur_score)
         elif question_type == "what":
             pass
         elif question_type == "when":
@@ -23,8 +23,10 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
         elif question_type == "how":
             pass
         elif question_type == "whom":
-            pass
+            score = rules_parser.find_who_rules_scores(question, sentence_list[0], sentence_list[1])
         elif question_type == "whose":
+            score = rules_parser.find_who_rules_scores(question, sentence_list[0], sentence_list[1])
+        elif question_type == "which":
             pass
         morph_story_sentences_dict[sent_number] = [original_sentence, morphed_sentence_list
                                                    , score]
@@ -47,15 +49,20 @@ def find_matching_story_sentence(morph_story_sentences_dict, question_type, ques
     return find_answer(matching_sentence, question_type, question)
 
 
-def question_iterator(question_pair_lst, morph_story_sentences_dict):
+def question_iterator(question_pair_lst, morph_story_sentences_dict, output_file):
     for question_pair in question_pair_lst:
-        #print(question_pair)
         question = question_pair["Question"]
         question_type = question_pair["Type"]
         answer = find_story_sentence_scores(morph_story_sentences_dict, question_type, question)
-        print("QuestionID: " + question_pair["QuestionID"])
-        print("Question: " + question)
-        print("Answer: " + answer)
-        print("\n")
-
-
+        answer = answer.strip('\n')
+        answer = answer.replace('\n', ' ')
+        question_id_write = "QuestionID: " + question_pair["QuestionID"].strip()
+        question = "Question: " + question.strip()
+        answer_write = "Answer: " + answer + "\n"
+        print(question_id_write)
+        #print(question)
+        print(answer_write)
+        output_file.write(question_id_write)
+        output_file.write("\n")
+        output_file.write(answer_write)
+        output_file.write("\n")

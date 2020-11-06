@@ -1,14 +1,8 @@
-import string
-import sys, nltk
-from nltk.stem.porter import PorterStemmer
+import sys
 
 from extract_answers import question_iterator
-from processQuestions import findQuestionType
-from parser import removeStopWords
-from nltk.tokenize import sent_tokenize
-from story_handling import process_story, morph_story_sentences
 from question_handling import process_questions_file
-from rules_parser import find_who_rules_scores
+from story_handling import morph_story_sentences
 
 
 def processInputFile(inputFile):
@@ -30,10 +24,7 @@ def processInputFile(inputFile):
         return dirPath, storyIds
 
 
-
-
-
-def find_questions_and_story(questionsFile, storyFilePath):
+def find_questions_and_story(questionsFile, storyFilePath, output_file):
     """
     Summary Line:
     We might have to refactor this function. Ideally I prefer doing only one type of work inside a function. Currently not sure what this should do!
@@ -46,10 +37,10 @@ def find_questions_and_story(questionsFile, storyFilePath):
     """
     morph_story_sentences_dict = morph_story_sentences(storyFilePath)
     question_pair_lst = process_questions_file(questionsFile)
-    question_iterator(question_pair_lst, morph_story_sentences_dict)
+    question_iterator(question_pair_lst, morph_story_sentences_dict, output_file)
 
 
-def find_stories(dirPath, storyIdLst):
+def find_stories(dirPath, storyIdLst, output_file):
     """
     Summary Line:
     For each story Id, find the story file and the question File, then process that story to answer all the questions.
@@ -65,10 +56,13 @@ def find_stories(dirPath, storyIdLst):
     for storyId in storyIdLst:
         storyFilePath = dirPath + storyId + ".story"
         storyQuestionFilePath = dirPath + storyId + ".questions"
-        find_questions_and_story(storyQuestionFilePath, storyFilePath)
-        
+        find_questions_and_story(storyQuestionFilePath, storyFilePath, output_file)
+
 
 if __name__ == "__main__":
+    file_name = "all_story_responses.response"
+    output_file = open('./' + file_name, 'w')
     inputFile = sys.argv[1]
     dirPath, storyIdLst = processInputFile(inputFile)
-    find_stories(dirPath, storyIdLst)
+    find_stories(dirPath, storyIdLst, output_file)
+    output_file.close()
