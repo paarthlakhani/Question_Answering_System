@@ -3,7 +3,8 @@ good_clue = 4
 confident = 6
 slam_dunk = 20
 
-all_question_type = {"why", "whose", "what", "where", "when", "how", "who", "whom"}
+all_question_type = {"why", "whose", "what",
+                     "where", "when", "how", "who", "whom"}
 
 # common prepositions: above, along, at, below, beside, between, during, for, from, in, near, on, outside, over, past, through, towards, under, up, with
 location_preposition = {"in", "on", "at", "near", "next to", "between", "far from", "opposite", "behind", "under",
@@ -16,7 +17,8 @@ date_time_labels = {"DATE", "TIME"}
 usa_names_1910_2013 = []
 with open('./usa_names_1910_2013', 'r') as names_file:
     usa_names_1910_2013 = names_file.readlines()
-    usa_names_1910_2013 = list(map(lambda name: name.strip(), usa_names_1910_2013))
+    usa_names_1910_2013 = list(
+        map(lambda name: name.strip(), usa_names_1910_2013))
 
 common_titles = []
 with open('./common_titles.txt', 'r') as common_titles_file:
@@ -45,3 +47,6 @@ LOCATION = countries + us_states + canadian_provinces
 
 MONTH = {"january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november",
          "december"}
+
+quantifiers = {"feet", "mile", "tall", "big", "small", "short", "long", "much", "many", "majority", "large", "few", "several", "plently",
+               "lot", "some", "none", "all", "cost", "money", "old", "young", "age", "million", "billion", "dollar", "year", "month", "percent"}

@@ -21,7 +21,7 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
         elif question_type == "when":
             score = rules_parser.find_when_rules_score(question, sentence_list[0], sentence_list[1])
         elif question_type == "how":
-            pass
+            score = rules_parser.find_how_rules_score(question, original_sentence, morphed_sentence_list)
         elif question_type == "whom":
             score = rules_parser.find_who_rules_scores(question, sentence_list[0], sentence_list[1])
         elif question_type == "whose":
@@ -47,17 +47,63 @@ def extract_where_answer(sentence, question):
         for entity, label in named_entities.items():
             if label == "GPE" or label == "LOC" or label in constants.LOCATION:
                 if answer_sentence:
-                    answer_sentence += " | " + entity
+                    answer_sentence += " " + entity
                 else:
                     answer_sentence = entity
         return answer_sentence if answer_sentence else sentence
     #where did find something
+    return sentence
+
+def extract_why_answer(sentence, question):
+    answer_sentence = ''
+    if "because" in sentence.lower():
+        words = sentence.lower().split()
+        i = -1
+        for i, word in enumerate(words):
+            if "because" in word:
+                i += 1
+                answer_sentence += word
+                break
+        while i < len(words) and words[i].isalpha():
+            answer_sentence += " " + words[i]
+            i += 1
+        return answer_sentence
+    if "so" in sentence.lower():
+        words = sentence.lower().split()
+        i = -1
+        for i, word in enumerate(words):
+            if "so" in word:
+                i += 1
+                answer_sentence += word
+                break
+        while i < len(words) and words[i].isalpha():
+            answer_sentence += " " +words[i]
+            i += 1
+        return answer_sentence
 
     return sentence
+
+
+def extract_how_answer(sentence, question):
+    tokenized_words = p.word_tokenizer(sentence)
+    named_entities = p.entity_recognizer(sentence)
+    for entity, label in named_entities.items():
+        if label in set(["QUANTITY", "MONEY", "PERCENT", "DATE"]):
+            return entity
+    for i, word in enumerate(tokenized_words):
+        if word.isdigit() or "$" in word or "%" in word:
+            return "t".join(tokenized_words[i:i+2])
+    return sentence
+
+
 
 def find_answer(sentence, question_type, question):
     if question_type == "where":
         return extract_where_answer(sentence, question)
+    # if question_type == "how":
+    #     return extract_how_answer(sentence, question)
+    # if question_type == "why":
+    #     return extract_why_answer(sentence, question)
     return sentence
 
 

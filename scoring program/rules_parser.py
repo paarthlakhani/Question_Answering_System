@@ -59,16 +59,16 @@ def find_where_rules_score(question, story_sentence, morphed_sentence):
 
     # Rule 3: looks for sentences with words belonging to LOCATION semantic class
     named_entities = p.entity_recognizer(story_sentence)
-    
+    # print("The named entities", named_entities)
     for entity, label in named_entities.items():
-        if label in spacy_location_labels:
+        if label in spacy_location_labels or entity in LOCATION:
             score += confident
             # Need to add one more check here to identify LOCATION
             if entity in LOCATION:
                 score += good_clue
-                # Rule that I added
-                if "locate" in question.lower():
-                    score += slam_dunk
+            # Rule that I added
+            if "locate" in question.lower():
+                score += 2*slam_dunk 
     return score
 
 
@@ -282,3 +282,25 @@ def find_what_rules_score(question, story_sentence, morphed_sentence):
     #
 
     return score
+
+def find_how_rules_score(question, sentence, morphed_sentence):
+    score = 0
+
+    # Rule 1: Generic wordMatch function
+    score += word_match(question, morphed_sentence)
+    
+    named_entities = p.entity_recognizer(sentence)
+    tokenized_words = p.word_tokenizer(sentence)
+    #Rule 2: Rewards the sentences that contain numbers if question conatains 'quantifiers'
+    for entity, label in named_entities.items():
+        if label in set(["QUANTITY", "MONEY", "PERCENT", "DATE"]):
+            score += good_clue
+
+    question_tokens = p.word_tokenizer(question)
+    for word in question_tokens:
+        if word in quantifiers:
+            for sent_word in tokenized_words or sent_word in quantifiers:
+                if sent_word.isdigit():
+                    score += confident
+    return score
+    
