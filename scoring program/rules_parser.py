@@ -213,6 +213,8 @@ def find_why_rules_score(story_sentence, cur_sentence_index, best_sentence_index
 
 
 def find_when_rules_score(question, story_sentence, morphed_sentence):
+    story_sentence = story_sentence.replace('\n', ' ').strip()
+
     score = 0
     word_match_score = word_match(question, morphed_sentence)
     sent_tokenized_words = p.word_tokenizer(story_sentence)
@@ -283,6 +285,7 @@ def find_what_rules_score(question, story_sentence, morphed_sentence):
 
     return score
 
+
 def find_how_rules_score(question, sentence, morphed_sentence):
     score = 0
 
@@ -293,7 +296,7 @@ def find_how_rules_score(question, sentence, morphed_sentence):
     tokenized_words = p.word_tokenizer(sentence)
     #Rule 2: Rewards the sentences that contain numbers if question conatains 'quantifiers'
     for entity, label in named_entities.items():
-        if label in set(["QUANTITY", "MONEY", "PERCENT", "DATE"]):
+        if label in {"QUANTITY", "MONEY", "PERCENT", "DATE"}:
             score += good_clue
 
     question_tokens = p.word_tokenizer(question)
@@ -303,4 +306,3 @@ def find_how_rules_score(question, sentence, morphed_sentence):
                 if sent_word.isdigit():
                     score += confident
     return score
-    

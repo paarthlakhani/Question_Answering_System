@@ -36,6 +36,7 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
 
 def extract_where_answer(sentence, question):
     # Where is something located?
+    sentence = sentence.replace('\n', ' ')
     answer_sentence = ''
     named_entities = p.entity_recognizer(sentence)
     if len(named_entities) == 1:
@@ -55,7 +56,9 @@ def extract_where_answer(sentence, question):
     #where did find something
     return sentence
 
+
 def extract_why_answer(sentence, question):
+    sentence = sentence.replace('\n', ' ')
     answer_sentence = ''
     if "because" in sentence.lower():
         words = sentence.lower().split()
@@ -86,7 +89,7 @@ def extract_why_answer(sentence, question):
 
 
 def extract_who_answer(sentence, question):
-    sentence = sentence.replace('\n', ' ')
+    sentence = sentence.replace('\n', ' ').strip()
     question_token = p.word_tokenizer(question)
     sent_entities = p.entity_recognizer(sentence)
     for sent_entity, label in sent_entities.items():
@@ -112,11 +115,25 @@ def extract_how_answer(sentence, question):
     return sentence
 
 
+def extract_when_answer(sentence, question):
+    sentence = sentence.replace('\n', ' ')
+    answer = ""
+    sent_entities = p.entity_recognizer(sentence)
+    for sent_entity, label in sent_entities.items():
+        if label == "DATE":
+            answer = answer + sent_entity + " "
+    if answer:
+        return answer
+    return sentence
+
+
 def find_answer(sentence, question_type, question):
     if question_type == "where":
         return extract_where_answer(sentence, question)
     elif question_type == "who":
         return extract_who_answer(sentence, question)
+    elif question_type == "when":
+        return extract_when_answer(sentence, question)
     # if question_type == "how":
     #     return extract_how_answer(sentence, question)
     # if question_type == "why":
