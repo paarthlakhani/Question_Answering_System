@@ -66,6 +66,9 @@ def find_where_rules_score(question, story_sentence, morphed_sentence):
             # Need to add one more check here to identify LOCATION
             if entity in LOCATION:
                 score += good_clue
+                # Rule that I added
+                if "locate" in question.lower():
+                    score += slam_dunk
     return score
 
 

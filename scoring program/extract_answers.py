@@ -1,5 +1,6 @@
 import rules_parser
-
+import parser as p
+import constants
 
 def find_story_sentence_scores(morph_story_sentences_dict, question_type, question):
     # call the rule function
@@ -32,8 +33,31 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
     answer = find_matching_story_sentence(morph_story_sentences_dict, question_type, question)
     return answer
 
+def extract_where_answer(sentence, question):
+    # Where is something located?
+    answer_sentence = ''
+    named_entities = p.entity_recognizer(sentence)
+    if len(named_entities) == 1:
+        for key in named_entities:
+            answer_sentence += key
+        return answer_sentence
+        
+    if "locate" or "live" in question.lower():
+        # print("The sentence is:", sentence, "\nThe question is:",question)
+        for entity, label in named_entities.items():
+            if label == "GPE" or label == "LOC" or label in constants.LOCATION:
+                if answer_sentence:
+                    answer_sentence += " | " + entity
+                else:
+                    answer_sentence = entity
+        return answer_sentence if answer_sentence else sentence
+    #where did find something
+
+    return sentence
 
 def find_answer(sentence, question_type, question):
+    if question_type == "where":
+        return extract_where_answer(sentence, question)
     return sentence
 
 
