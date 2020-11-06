@@ -43,3 +43,5 @@ with open("./provinces_CANADA.txt") as fp:
 
 LOCATION = countries + us_states + canadian_provinces
 # print(LOCATION)
+
+MONTH = set(["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"])

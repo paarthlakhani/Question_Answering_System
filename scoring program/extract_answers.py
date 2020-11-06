@@ -17,7 +17,7 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
             cur_score = morph_story_sentences_dict[sent_number][2]
             score = rules_parser.find_why_rules_score(original_sentence, sent_number, best_sentence_index, best_sentence_score, cur_score)
         elif question_type == "what":
-            pass
+            score = rules_parser.find_what_rules_score(question, original_sentence, morphed_sentence_list)
         elif question_type == "when":
             pass
         elif question_type == "how":
