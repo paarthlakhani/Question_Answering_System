@@ -121,6 +121,7 @@ def find_who_rules_scores(question, story_sentence, morphed_sentence):
 
     return score
 
+
 def find_best_sentence_for_why_rules(question, morph_story_sentence_dict):
     """
     Summary Line:
@@ -201,12 +202,47 @@ def find_why_rules_score(story_sentence, cur_sentence_index, best_sentence_index
             #     score += confident
             score += good_clue
         # Rules I added
-        elif word.lower() in set(["if", "after"]):
+        elif word.lower() in {"if", "after"}:
             if cur_sentence_score == best_sentence_score:
                 score += good_clue
             
     return score
-        
+
+
+def find_when_rules_score(question, story_sentence, morphed_sentence):
+    score = 0
+    word_match_score = word_match(question, morphed_sentence)
+    sent_tokenized_words = p.word_tokenizer(story_sentence)
+    question_tokenized_words = p.word_tokenizer(question)
+
+    # Rule #1: Sentence contain any time expression
+    named_entities = p.entity_recognizer(story_sentence)
+
+    for entity, label in named_entities.items():
+        if label in date_time_labels:
+            score += good_clue
+            score += word_match_score
+
+    # Rule #2
+    for sent_word in sent_tokenized_words:
+        if "the last" in question and sent_word.lower() in {"first", "last", "since", "ago"}:
+            score += slam_dunk
+
+    # Rule #3:
+    question_contain_start_begin = False
+    for question_word in question_tokenized_words:
+        if question_word.lower() in {"start", "begin"}:
+            question_contain_start_begin = True
+            break
+
+    if question_contain_start_begin:
+        for sent_word in sent_tokenized_words:
+            if sent_word.lower() in {"start", "begin", "since", "year"}:
+                score += slam_dunk
+
+    return score
+
+
 def find_what_rules_score(question, story_sentence, morphed_sentence):
     """
     Summary Line:
@@ -218,7 +254,7 @@ def find_what_rules_score(question, story_sentence, morphed_sentence):
     score += word_match(question, morphed_sentence)
 
     # Rule 2: Rewards sentences that contain date expression if the question contains a month of the year
-    question_tokens = p.word_tokenizer(question)    
+    question_tokens = p.word_tokenizer(question)
     days = {"today", "yesterday", "tomorrow", "last night"}
 
     question_has_month = set(question_tokens).intersection(MONTH)
@@ -236,11 +272,10 @@ def find_what_rules_score(question, story_sentence, morphed_sentence):
     if "name" in question.lower():
         if "name" in story_sentence.lower() or "call" in story_sentence.lower() or "known" in story_sentence.lower():
             score += slam_dunk
-     
+
     # Rule 5: Very specific and recognizes questions that conatain phrases such as 'name of <x>' or
     # 'name for <x>'. Any sentence that contains a proper noun whose head noun matches x will be highly rewarded.
     #  Ex 'What is the name of creek?' ans: "Pigeon Creek"
-    #  
+    #
 
     return score
-

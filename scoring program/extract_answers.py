@@ -5,7 +5,6 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
     # call the rule function
     if question_type == "why":
         morph_story_sentences_dict, best_sentence_index, best_sentence, best_sentence_score = rules_parser.find_best_sentence_for_why_rules(question, morph_story_sentences_dict)
-
     for sent_number, sentence_list in morph_story_sentences_dict.items():
         score = 0
         original_sentence, morphed_sentence_list = sentence_list[0], sentence_list[1]
@@ -19,7 +18,7 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
         elif question_type == "what":
             score = rules_parser.find_what_rules_score(question, original_sentence, morphed_sentence_list)
         elif question_type == "when":
-            pass
+            score = rules_parser.find_when_rules_score(question, sentence_list[0], sentence_list[1])
         elif question_type == "how":
             pass
         elif question_type == "whom":

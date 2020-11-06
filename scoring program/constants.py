@@ -11,7 +11,7 @@ location_preposition = {"in", "on", "at", "near", "next to", "between", "far fro
                         "front"}
 
 spacy_location_labels = {"GPE", "LOC"}
-
+date_time_labels = {"DATE", "TIME"}
 
 usa_names_1910_2013 = []
 with open('./usa_names_1910_2013', 'r') as names_file:
@@ -22,7 +22,7 @@ common_titles = []
 with open('./common_titles.txt', 'r') as common_titles_file:
     common_titles = common_titles_file.readlines()
     common_titles = list(map(lambda name: name.strip(), common_titles))
-#print(common_titles)
+# print(common_titles)
 
 human_class = usa_names_1910_2013 + common_titles
 
@@ -34,14 +34,14 @@ with open("./country_names.txt") as fp:
 us_states = []
 with open("./states_US.txt") as fp:
     states = fp.readlines()
-    us_states = list(map(lambda name:name.strip(), states))
+    us_states = list(map(lambda name: name.strip(), states))
 
-canadian_provinces =[]
+canadian_provinces = []
 with open("./provinces_CANADA.txt") as fp:
     provinces = fp.readlines()
-    canadian_provinces = list(map(lambda name:name.strip(), provinces))
+    canadian_provinces = list(map(lambda name: name.strip(), provinces))
 
 LOCATION = countries + us_states + canadian_provinces
-# print(LOCATION)
 
-MONTH = set(["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"])
+MONTH = {"january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november",
+         "december"}

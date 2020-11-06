@@ -2,6 +2,7 @@ import nltk
 import spacy
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
+#from nltk.stem import WordNetLemmatizer
 import constants
 
 nlp = spacy.load("en_core_web_sm")
@@ -22,8 +23,10 @@ def morphological_roots(list_of_words):
 
     """
     porter_stemmer = PorterStemmer()
+    #wordnet_lemmatizer = WordNetLemmatizer()
     for word_index in range(0, len(list_of_words)):
         list_of_words[word_index] = porter_stemmer.stem(list_of_words[word_index])
+        #list_of_words[word_index] = wordnet_lemmatizer.lemmatize(list_of_words[word_index])
     return list_of_words
 
 
