@@ -1,1 +1,1 @@
-
+python3 ./scoring_program/main_program.py input_file_2
