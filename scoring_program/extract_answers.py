@@ -7,6 +7,7 @@ def find_story_sentence_scores(morph_story_sentences_dict, question_type, questi
     # call the rule function
     if question_type == "why":
         morph_story_sentences_dict, best_sentence_index, best_sentence, best_sentence_score = rules_parser.find_best_sentence_for_why_rules(question, morph_story_sentences_dict)
+   
     for sent_number, sentence_list in morph_story_sentences_dict.items():
         score = 0
         original_sentence, morphed_sentence_list = sentence_list[0], sentence_list[1]
@@ -71,6 +72,13 @@ def extract_why_answer(sentence, question):
         for i, word in enumerate(words):
             if "so" in word:
                 return " ".join(words[i:])
+    
+    if "following" in sentence.lower():
+        words = sentence.lower().split()
+        i -= 1
+        for i, word in enumerate(words):
+            if "following" in word:
+                return " ".join(words[i:])
 
     return sentence
 
@@ -100,12 +108,20 @@ def extract_how_answer(sentence, question):
         for entity, label in named_entities.items():
             if label in "QUANTITY":
                 return entity
-    money = ["cost", "much", "expensive"]
+    money = ["cost", "dollar", "expensive"]
     if any(m in question.lower() for m in money):
         for entity, label in named_entities.items():
             if label in "MONEY":
                 return entity
+    time = ["time", "long", "many"]
+    if any(t in question.lower() for t in time):
+        for entity, label in named_entities.items():
+            if label in "TIME":
+                return entity
     
+    # for word in sentence.lower():
+
+
     return sentence
 
 
@@ -120,6 +136,9 @@ def extract_when_answer(sentence, question):
         return answer
     return sentence
 
+def extract_what_answer(sentence, question):
+    # remove all the stop words 
+    pass
 
 def find_answer(sentence, question_type, question):
     if question_type == "where":
