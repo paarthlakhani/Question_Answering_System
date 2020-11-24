@@ -17,16 +17,26 @@ date_time_labels = {"DATE", "TIME"}
 usa_names_1910_2013 = []
 with open('./data_files/usa_names_1910_2013', 'r') as names_file:
     usa_names_1910_2013 = names_file.readlines()
-    usa_names_1910_2013 = list(
+    usa_names_1910_2013 = set(
         map(lambda name: name.strip(), usa_names_1910_2013))
 
 common_titles = []
 with open('./data_files/common_titles.txt', 'r') as common_titles_file:
     common_titles = common_titles_file.readlines()
-    common_titles = list(map(lambda name: name.strip(), common_titles))
+    common_titles = set(map(lambda name: name.strip(), common_titles))
 # print(common_titles)
 
-human_class = usa_names_1910_2013 + common_titles
+#common_last_names = []
+#with open('./data_files/common_last_names.txt', 'r') as common_last_names_file:
+#    common_last_names = common_last_names_file.readlines()
+#    common_last_names = set(map(lambda name: name.strip().lower(), common_last_names))
+
+#occupation_words = []
+#with open('./data_files/occupation_words.txt', 'r') as occupation_words_file:
+#    occupation_words = occupation_words_file.readlines()
+#    occupation_words = set(map(lambda name: name.strip().lower(), occupation_words))
+
+human_class = usa_names_1910_2013 | common_titles
 
 countries = []
 with open("./data_files/country_names.txt") as fp:
@@ -50,3 +60,5 @@ MONTH = {"january", "february", "march", "april", "may", "june", "july", "august
 
 quantifiers = {"feet", "mile", "tall", "big", "small", "short", "long", "much", "many", "majority", "large", "few", "several", "plently",
                "lot", "some", "none", "all", "cost", "money", "old", "young", "age", "million", "billion", "dollar", "year", "month", "percent"}
+
+currency_symbols = {"$", "€", "£", "¥", }

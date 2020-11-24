@@ -1,3 +1,4 @@
+import string
 import rules_parser
 import parser as p
 import constants
@@ -48,12 +49,17 @@ def extract_where_answer(sentence, question):
         
     if "locate" or "live" in question.lower():
         # print("The sentence is:", sentence, "\nThe question is:",question)
+        entities = []
         for entity, label in named_entities.items():
             if label == "GPE" or label == "LOC" or label in constants.LOCATION:
-                return entity
-        return answer_sentence if answer_sentence else sentence
-    #where did find something
-    return sentence
+                entities.append(entity)
+        entity = ' '.join(entities)
+        if entity:
+            return entity
+        else:
+            sentence = p.answer_cleanup(sentence, question)
+            return sentence
+    return p.answer_cleanup(sentence, question)
 
 
 def extract_why_answer(sentence, question):
@@ -83,19 +89,43 @@ def extract_why_answer(sentence, question):
     return sentence
 
 
-def extract_who_answer(sentence, question):
+def extract_who_answer(sentence, question, matching_sentence_number, morph_story_sentences_dict):
     sentence = sentence.replace('\n', ' ').strip()
     question_token = p.word_tokenizer(question)
     sent_entities = p.entity_recognizer(sentence)
+    answer = ""
     for sent_entity, label in sent_entities.items():
         if label == "PERSON":
             if sent_entity not in question:
-                return str(sent_entity)
+                answer = str(sent_entity)
+                return answer
         elif label == "ORG":
             if sent_entity not in question:
-                return str(sent_entity)
-
-    return sentence
+                answer = str(sent_entity)
+                return answer
+    if not answer:
+        sentence_pos = p.pos_tagger(sentence)
+        pos_tags = sentence_pos.values()
+        if "PRON" in pos_tags:
+            answer = ""
+            for i in range(matching_sentence_number - 1, -1, -1):
+                previous_sentence = morph_story_sentences_dict.get(i)[0]
+                previous_sentence = previous_sentence.replace('\n', ' ')
+                previous_sentence = previous_sentence.translate(str.maketrans('', '', string.punctuation))
+                previous_sentence_words = p.word_tokenizer(previous_sentence)
+                for previous_sentence_words_index in range(len(previous_sentence_words) - 1, -1, -1):
+                    word_pos_dict = p.entity_recognizer(previous_sentence_words[previous_sentence_words_index])
+                    entity_values = list(word_pos_dict.values())
+                    if "PERSON" in entity_values:
+                        answer = list(word_pos_dict.keys())[0] + " " + answer
+                if answer:
+                    break
+            if answer:
+                return answer
+            return p.answer_cleanup(sentence, question)
+        else:
+            return p.answer_cleanup(sentence, question)
+    return p.answer_cleanup(sentence, question)
 
 
 def extract_how_answer(sentence, question):
@@ -110,18 +140,22 @@ def extract_how_answer(sentence, question):
                 return entity
     money = ["cost", "dollar", "expensive"]
     if any(m in question.lower() for m in money):
+        money_entities = []
         for entity, label in named_entities.items():
             if label in "MONEY":
-                return entity
+                #return entity
+                money_entities.append(entity)
+                for money_entity_index in range(len(money_entities)):
+                    if money_entities[money_entity_index].isdigit():
+                        num_index = tokenized_words.index(money_entities[money_entity_index])
+                        if tokenized_words[num_index - 1] in constants.currency_symbols:
+                            money_entities[money_entity_index] = tokenized_words[num_index - 1] + money_entities[money_entity_index]
+                return ' '.join(money_entities)
     time = ["time", "long", "many"]
     if any(t in question.lower() for t in time):
         for entity, label in named_entities.items():
             if label in "TIME":
                 return entity
-    
-    # for word in sentence.lower():
-
-
     return sentence
 
 
@@ -137,32 +171,38 @@ def extract_when_answer(sentence, question):
     return sentence
 
 def extract_what_answer(sentence, question):
+    return p.answer_cleanup(sentence, question)
     # remove all the stop words 
     pass
 
-def find_answer(sentence, question_type, question):
+
+def find_answer(sentence, question_type, question, matching_sentence_number, morph_story_sentences_dict):
     if question_type == "where":
         return extract_where_answer(sentence, question)
     elif question_type == "who":
-        return extract_who_answer(sentence, question)
+        return extract_who_answer(sentence, question, matching_sentence_number, morph_story_sentences_dict)
     elif question_type == "when":
         return extract_when_answer(sentence, question)
     if question_type == "how":
         return extract_how_answer(sentence, question)
     if question_type == "why":
         return extract_why_answer(sentence, question)
+    if question_type == "what":
+        return extract_what_answer(sentence, question)
     return sentence
 
 
 def find_matching_story_sentence(morph_story_sentences_dict, question_type, question):
     max_score = 0
     matching_sentence = ''
+    matching_sentence_number = -1
     for sentence_number, sentence_elements in morph_story_sentences_dict.items():
         sentence, score = sentence_elements[0], sentence_elements[2]
         if score > max_score:
             max_score = score
             matching_sentence = sentence
-    return find_answer(matching_sentence, question_type, question)
+            matching_sentence_number = sentence_number
+    return find_answer(matching_sentence, question_type, question, matching_sentence_number, morph_story_sentences_dict)
 
 
 def question_iterator(question_pair_lst, morph_story_sentences_dict, output_file):

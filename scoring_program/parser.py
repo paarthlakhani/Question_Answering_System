@@ -125,7 +125,8 @@ def is_human(word):
     :param word: word to find if it is part of HUMAN set
     :return: true if word is part of HUMAN set else false
     """
-    if word in constants.human_class:
+    if word.lower() in constants.human_class:
+    # if word in constants.human_class:
         return True
     return False
 
@@ -140,3 +141,22 @@ def is_name(noun_phrase):
         return is_name_bool
     else:
         return False
+
+
+def answer_cleanup(sentence, question):
+    #sentence = removeStopWords(sentence)
+    #sentence = sentence.translate(str.maketrans('', '', string.punctuation))
+
+    question_morph = morphological_roots(word_tokenizer(question))
+    # question_entities = p.entity_recognizer(question)
+    sentence_morph = morphological_roots(word_tokenizer(sentence))
+    sentence_words = word_tokenizer(sentence)
+
+    for question_word in question_morph:
+        if question_word in sentence_morph:
+            index = sentence_morph.index(question_word)
+            sentence_morph.pop(index)
+            sentence_words.pop(index)
+    sentence = ' '.join(sentence_words)
+
+    return sentence

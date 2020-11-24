@@ -8,7 +8,14 @@ Our program takes around 4 seconds to run input_file with one story
 
 Our program takes around 3 minutes to run input_file with 74 stories
 
-Contributions of team members:
+Contributions of team members: (2nd checkpoint)
+Sushmita:
+
+
+Paarth:
+Mainly focussed on
+
+Contributions of team members: (1st checkpoint)
 
 Sushmita:
 1. Processed Question files
