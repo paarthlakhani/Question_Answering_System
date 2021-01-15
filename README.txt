@@ -1,11 +1,19 @@
+Question Answering System:
+In this project, we designed and developed a Question Answering System.
+We took a rule based approach to designing this system.
+Every sentence is given a score and the sentence with highest score is selected as the potential match for the answer
+We handled WHO, WHEN, WHERE, WHY, HOW and WHAT type of questions
+
+Contributors:
+Paarth Lakhani
+Sushmitha Nataraj
+
 External libraries:
-
 spacy.io: https://spacy.io/
-
 NLTK: https://www.nltk.org/ 
 
+Time Taken to run:
 Our program takes around 4 seconds to run input_file with one story
-
 Our program takes around 3 minutes to run input_file with 74 stories
 
 Contributions of team members: (Final checkpoint)
